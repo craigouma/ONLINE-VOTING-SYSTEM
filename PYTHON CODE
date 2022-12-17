@@ -1,0 +1,149 @@
+import hashlib
+
+# Data structures for storing user information
+contenders = {}
+voters = {}
+
+class Contender:
+  def __init__(self, name, party):
+    self.name = name
+    self.party = party
+    self.votes = 0
+
+class Voter:
+  def __init__(self, name, voter_id, password):
+    self.name = name
+    self.voter_id = voter_id
+    self.password = password
+
+# Function for registering a new contender
+def register_contender(name, party):
+  global contenders
+  # Check if contender is already registered
+  if name in contenders:
+    print("Contender already registered")
+    return
+  # Create a new contender object and add it to the dictionary
+  c = Contender(name, party)
+  contenders[name] = c
+  print("Contender registered successfully")
+
+# Function for registering a new voter
+def register_voter(name):
+  global voters
+  # Generate a unique voter ID and password for the new voter
+  voter_id = generate_voter_id()
+  password = generate_password()
+  # Create a new voter object and add it to the dictionary
+  v = Voter(name, voter_id, password)
+  voters[voter_id] = v
+  print("Voter registered successfully")
+  print("Voter ID:", voter_id)
+  print("Password:", password)
+
+# Function for generating a unique voter ID
+def generate_voter_id():
+  # Generate a random number and hash it to create a unique ID
+  num = random.randint(1000000000, 9999999999)
+  return hashlib.sha256(str(num).encode()).hexdigest()
+
+# Function for generating a password
+def generate_password():
+  # Generate a random number and hash it to create a password
+  num = random.randint(1000000000, 9999999999)
+  return hashlib.sha256(str(num).encode()).hexdigest()
+
+# Function for verifying a voter's credentials
+def verify_voter(voter_id, password):
+  global voters
+  # Check if voter ID is valid
+  if voter_id not in voters:
+    print("Invalid voter ID")
+    return False
+  # Check if password is correct
+  v = voters[voter_id]
+  if v.password != password:
+    print("Incorrect password")
+    return False
+  # Voter is verified
+  return True
+
+# Function for casting a vote
+def cast_vote(voter_id, contender_name):
+  global contenders
+  global voters
+  # Verify the voter's credentials
+  if not verify_voter(voter_id, password):
+    return
+  # Check if contender is registered
+  if contender_name not in contenders:
+    print("Contender not registered")
+    return
+  # Increment the contender's vote count
+  c = contenders[contender_name]
+c.votes += 1
+# Mark the voter as having voted
+v = voters[voter_id]
+v.has_voted = True
+print("Vote cast successfully")
+
+# Function for checking the election results
+def check_results():
+  global contenders
+  # Sort the contenders by vote count
+  sorted_contenders = sorted(contenders.values(), key=lambda x: x.votes, reverse=True)
+  # Print the results
+  for c in sorted_contenders:
+    print(c.name, c.votes)
+
+# Admin login function
+def admin_login():
+  # Get the admin's username and password
+  username = input("Enter username: ")
+  password = input("Enter password: ")
+  # Verify the admin's credentials
+  if username == "admin" and password == "adminpassword":
+    return True
+  else:
+    return False
+
+# Main function
+def main():
+  while True:
+    # Print the main menu
+    print("1. Register contender")
+    print("2. Register voter")
+    print("3. Cast vote")
+    print("4. Check results")
+    print("5. Exit")
+    # Get the user's choice
+    choice = input("Enter your choice: ")
+    if choice == "1":
+      # Contender registration
+      name = input("Enter contender's name: ")
+      party = input("Enter contender's party: ")
+      register_contender(name, party)
+    elif choice == "2":
+      # Voter registration
+      name = input("Enter voter's name: ")
+      register_voter(name)
+    elif choice == "3":
+      # Vote casting
+      voter_id = input("Enter voter ID: ")
+      password = input("Enter password: ")
+      contender_name = input("Enter contender's name: ")
+      cast_vote(voter_id, contender_name)
+    elif choice == "4":
+      # Check election results
+      if admin_login():
+        check_results()
+      else:
+        print("Invalid login")
+    elif choice == "5":
+      # Exit
+      break
+    else:
+      print("Invalid choice")
+
+# Run the main function
+main()
