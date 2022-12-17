@@ -147,3 +147,116 @@ def main():
 
 # Run the main function
 main()
+
+
+//You might create a template file called base.html that includes the HTML, CSS, and JavaScript files for the voting system
+
+<!-- templates/base.html -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Online Voting System</title>
+    <!-- Include CSS files -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </head>
+  <body>
+    <!-- Main content goes here -->
+    {% block content %}{% endblock %}
+    <!-- Include JavaScript files -->
+    <script src="{% static 'js/main.js' %}"></script>
+  </body>
+</html>
+
+//Next, create a template file for each page of the voting system that extends the base template and defines the content for that page. For example, you might create a template file called register_contender.html for the contender registration page:
+
+<!-- templates/register_contender.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Contender Registration</h1>
+  <form action="{% url 'register_contender' %}" method="post">
+    {% csrf_token %}
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name" required>
+    <br>
+    <label for="party">Party:</label>
+    <input type="text" name="party" id="party" required>
+    <br>
+    <input type="submit" value="Register">
+  </form>
+{% endblock %}
+//You can create similar template files for the other pages of the voting system, such as the voter registration page, the vote casting page, and the results page.
+
+//To style the pages of the voting system with CSS, you can create a CSS file in the static/css directory of your app and link to it in the base template. For example, you might create a file called style.css with the following content:
+
+/* static/css/style.css */
+
+body {
+  font-family: sans-serif;
+}
+
+h1 {
+  text-align: center;
+}
+
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+input[type="submit"] {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+// static/js/main.js
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Add event listeners for form submissions
+  var forms = document.querySelectorAll('form');
+  forms.forEach(function(form) {
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      // Send a request to the server to process the form submission
+      var xhr = new XMLHttpRequest();
+      xhr.open(form.method, form.action, true);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.onload = function() {
+        // Display a message based on the response from the server
+        if (xhr.status === 200) {
+          alert(xhr.responseText);
+        } else {
+          alert('Error processing form submission');
+        }
+      };
+      xhr.send(new FormData(form));
+    });
+  });
+});
